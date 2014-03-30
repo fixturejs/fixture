@@ -1,0 +1,46 @@
+{
+  "name": "fixture",
+  "version": "1.0.0",
+  "title": "Fixture",
+  "author": {
+    "name": "Kyle Florence",
+    "url": "https://github.com/kflorence/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kflorence/fixture.git"
+  },
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "https://raw.github.com/kflorence/fixture/master/license-bsd"
+    },
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/kflorence/fixture/master/license-mit"
+    }
+  ],
+  "dependencies": {},
+  "description": "A simple, lightweight JavaScript fixture API.",
+  "keywords": [
+    "attach",
+    "callback",
+    "detach",
+    "fixture",
+    "lifecycle",
+    "setup",
+    "teardown"
+  ],
+  "homepage": "https://github.com/kflorence/fixture",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-cli": "~0.1.11",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-watch": "~0.5.3",
+    "underscore": "~1.6.0",
+    "underscore.string": "~2.3.3"
+  }
+}
