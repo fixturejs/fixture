@@ -1,5 +1,5 @@
 /*!
-Fixture - v1.0.0 - 2014-03-29
+Fixture - v1.0.0 - 2014-03-30
 https://github.com/kflorence/fixture
 A simple, lightweight JavaScript fixture API.
 
@@ -21,6 +21,7 @@ Released under the BSD, MIT licenses
 })(this, function() {
 
 var
+  fixtures = {},
   uuid = 0;
 
 function clone( source ) {
@@ -108,7 +109,7 @@ extend( Fixture, {
       throw "Invalid Fixture prototype.";
     }
 
-    this.prototypes[ proto.name ] = proto;
+    fixtures[ proto.name ] = proto;
   },
 
   equals: function( first, second ) {
@@ -125,7 +126,7 @@ extend( Fixture, {
 
     // Allow namespacing
     name = name.split( "." )[ 0 ];
-    proto = this.prototypes[ name ];
+    proto = fixtures[ name ];
 
     if ( proto ) {
       proto = extend( clone( proto ), settings );
@@ -133,8 +134,6 @@ extend( Fixture, {
 
     return proto;
   },
-
-  prototypes: {},
 
   isFixture: (function() {
     var
@@ -147,6 +146,18 @@ extend( Fixture, {
         matches[ 1 ] && matches[ 1 ].toLowerCase() === "fixture";
     };
   })(),
+
+  list: function() {
+    var
+      name,
+      list = [];
+
+    for ( name in fixtures ) {
+      list.push( name );
+    }
+
+    return list;
+  },
 
   normalize: function( mixed ) {
     var

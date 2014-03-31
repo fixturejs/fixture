@@ -1,6 +1,7 @@
 {
   "name": "fixture",
   "version": "1.0.0",
+  "description": "A simple, lightweight JavaScript fixture API.",
   "main": [
     "dist/fixture.js",
     "dist/fixture.min.js"
