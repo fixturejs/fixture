@@ -29,8 +29,8 @@ function extend( source, target ) {
 
 function noop() {}
 
-function typeOf( thing ) {
-  return thing == null ? thing + "" : typeof thing;
+function typeOf( value ) {
+  return value == null ? value + "" : typeof value;
 }
 
 function Fixture( settings ) {
@@ -42,7 +42,6 @@ function Fixture( settings ) {
 
   // Properties
   this.data = {};
-  this.options = {};
   this.uuid = uuid++;
 
   extend( this, settings );
@@ -51,52 +50,59 @@ function Fixture( settings ) {
 extend( Fixture.prototype, {
   attach: noop,
   detach: noop,
-  equals: function( fixture ) {
-    return Fixture.isFixture( fixture ) && this.uuid === fixture.uuid;
+  equals: function( other ) {
+    return Fixture.isFixture( other ) && this.uuid === other.uuid;
   },
+  interact: noop,
   toString: function() {
     return "Fixture:" + this.uuid;
   },
-  use: noop
+  verify: noop
 });
 
 extend( Fixture, {
-  create: function( mixed ) {
+  create: function( value ) {
     var
       fixture;
 
-    mixed = this.normalize( mixed );
+    value = this.normalize( value );
 
-    if ( mixed ) {
-      fixture = new Fixture( mixed );
+    if ( value ) {
+      fixture = new Fixture( value );
     }
 
     return fixture;
   },
 
-  define: function( proto ) {
+  define: function( definition ) {
+    definition = this.normalize( definition );
+
     if (
-      typeOf( proto ) !== "object" ||
-      typeOf( proto.name ) !== "string" ||
+      typeOf( definition ) !== "object" ||
+      typeOf( definition.name ) !== "string" ||
       !(
-        typeOf( proto.attach ) === "function" ||
-        typeOf( proto.detach ) === "function" ||
-        typeOf( proto.use ) === "function"
+        typeOf( definition.attach ) === "function" ||
+        typeOf( definition.detach ) === "function" ||
+        typeOf( definition.interact ) === "function" ||
+        typeOf( definition.verify ) === "function"
       )
     ) {
-      throw "Invalid Fixture prototype.";
+      throw "Fixture definition is invalid.";
+
+    } else if ( fixtures[ definition.name ] !== undefined ) {
+      throw "Fixture definition name already exists: " + definition.name;
     }
 
-    fixtures[ proto.name ] = proto;
+    fixtures[ definition.name ] = definition;
   },
 
-  equals: function( first, second ) {
+  equal: function( first, second ) {
     return this.isFixture( first ) && first.equals( second );
   },
 
   get: function( name, settings ) {
     var
-      proto;
+      definition;
 
     if ( typeOf( name ) !== "string" ) {
       return;
@@ -104,13 +110,13 @@ extend( Fixture, {
 
     // Allow namespacing
     name = name.split( "." )[ 0 ];
-    proto = fixtures[ name ];
+    definition = fixtures[ name ];
 
-    if ( proto ) {
-      proto = extend( clone( proto ), settings );
+    if ( definition ) {
+      definition = extend( clone( definition ), this.normalize( settings ) );
     }
 
-    return proto;
+    return definition;
   },
 
   isFixture: (function() {
@@ -118,9 +124,9 @@ extend( Fixture, {
       matches,
       rFunctionName = /function ([^(]+)/;
 
-    return function( object ) {
-      return typeOf( object ) === "object" && object.constructor &&
-        ( matches = rFunctionName.exec( object.constructor.toString() ) ) &&
+    return function( value ) {
+      return typeOf( value ) === "object" && value.constructor &&
+        ( matches = rFunctionName.exec( value.constructor.toString() ) ) &&
         matches[ 1 ] && matches[ 1 ].toLowerCase() === "fixture";
     };
   })(),
@@ -137,24 +143,24 @@ extend( Fixture, {
     return list;
   },
 
-  normalize: function( mixed ) {
+  normalize: function( value ) {
     var
-      fixture,
-      type = typeOf( mixed );
+      normalized,
+      type = typeOf( value );
 
     if ( type === "string" ) {
-      fixture = this.get( mixed );
+      normalized = this.get( value );
 
     } else if ( type === "function" ) {
-      fixture = { use: mixed };
+      normalized = { interact: value };
 
     } else if ( type === "object" ) {
-      fixture = this.get( mixed.name, mixed ) || mixed;
+      normalized = this.get( value.name, value ) || value;
 
-    } else if ( this.isFixture( mixed ) ) {
-      fixture = mixed;
+    } else if ( this.isFixture( value ) ) {
+      normalized = value;
     }
 
-    return fixture;
+    return normalized;
   }
 });
