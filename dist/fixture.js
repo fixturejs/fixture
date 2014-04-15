@@ -1,5 +1,5 @@
 /*!
-Fixture - v1.1.0 - 2014-04-13
+Fixture - v1.1.0 - 2014-04-14
 https://github.com/kflorence/fixture
 A simple, lightweight JavaScript fixture API.
 
@@ -96,12 +96,18 @@ extend( Fixture, {
     return fixture;
   },
 
-  define: function( definition ) {
-    definition = this.normalize( definition );
+  define: function( name, definition ) {
+    if ( arguments.length === 1 ) {
+      definition = name;
+      name = definition.name;
+
+    } else {
+      definition = this.normalize( definition );
+    }
 
     if (
       typeOf( definition ) !== "object" ||
-      typeOf( definition.name ) !== "string" ||
+      typeOf( name ) !== "string" ||
       !(
         typeOf( definition.attach ) === "function" ||
         typeOf( definition.detach ) === "function" ||
@@ -111,11 +117,11 @@ extend( Fixture, {
     ) {
       throw "Fixture definition is invalid.";
 
-    } else if ( fixtures[ definition.name ] !== undefined ) {
-      throw "Fixture definition name already exists: " + definition.name;
+    } else if ( fixtures[ name ] !== undefined ) {
+      throw "Fixture definition name already exists: " + name;
     }
 
-    fixtures[ definition.name ] = definition;
+    fixtures[ name ] = definition;
   },
 
   equal: function( first, second ) {
