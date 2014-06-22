@@ -120,15 +120,18 @@ A `Fixture` factory method which takes advantage of [normalization](#normalizati
   A value that will be [normalized](#normalization) into the settings used to create a `Fixture`.
 
 
-#### Fixture.define( [ _name_, ] _definition_ )
+#### Fixture.define( [ _name_, ] _definition_ [, _force_ ] ) => _Fixture_
 
-Creates a [fixture definition](#definitions).
+Creates a [fixture definition](#definitions). All fixture definitions will be normalized before they are stored.
 
 * **name** (_String_)  
   The name of the definition.
 
-* **definition** (_Fixture_ | _Function_ | _Object_ | _String_) 
+* **definition** (_Fixture_ | _Function_ | _Object_ | _String_)  
   The Object from which to create the definition. If the `name` parameter is not provided, this must be an Object with a defined `name` key.
+
+* **force** (_Boolean_)
+  Whether to allow the fixture definition to overwrite existing keys in storage. Defaults to `false`.
 
 
 #### Fixture.equal( _first_, _second_ ) => _Boolean_
@@ -158,13 +161,22 @@ Get a [fixture definition](#definitions) by name, optionally altering it by mixi
 
 Determine if some value is a `Fixture`. Fails if the value is not an Object of type `Fixture`.
 
-  * **value** (_ANY_)  
-    The value to test against.
+* **value** (_ANY_)  
+  The value to test against.
 
 
-#### Fixture.list() => _Array[String]_
+#### Fixture.list( [ _filter_ ] ) => _Array[String]_
 
 Get a list of available [fixture definitions](#definitions) by name.
+
+* **filter( _name_, _fixture_ )** (_Function_) => (_Boolean_ | _undefined)  
+  A function that may be used to filter the list of names returned.
+
+  * **name** (_String_)  
+    The name of the `Fixture`.
+
+  * **fixture** (_Fixture_)  
+    The `Fixture` object.
 
 
 #### Fixture.normalize( _value_ ) => _Fixture_ | _Object_

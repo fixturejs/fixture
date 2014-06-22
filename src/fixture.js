@@ -1,5 +1,19 @@
 var
   fixtures = {},
+  typeOf = (function() {
+    var
+      rFunctionName = /function ([^(]+)/,
+      matches,
+      type;
+
+    return function( value ) {
+      return value == null ? value + "" :
+        ( type = typeof value ) === "object" || type === "function" ? (
+          ( matches = rFunctionName.exec( value.constructor.toString() ) ) &&
+          matches[ 1 ] && matches[ 1 ].toLowerCase() || "object"
+        ) : type;
+    };
+  }()),
   uuid = 0;
 
 function clone( source ) {
@@ -28,10 +42,6 @@ function extend( source, target ) {
 }
 
 function noop() {}
-
-function typeOf( value ) {
-  return value == null ? value + "" : typeof value;
-}
 
 function Fixture( settings ) {
 
@@ -74,18 +84,19 @@ extend( Fixture, {
     return fixture;
   },
 
-  define: function( name, definition ) {
-    if ( arguments.length === 1 ) {
+  define: function( name, definition, force ) {
+    if ( typeOf( name ) === "object" ) {
+      force = definition;
       definition = name;
       name = definition.name;
-
-    } else {
-      definition = this.normalize( definition );
     }
+
+    definition = this.normalize( definition );
+    definition.name = name;
 
     if (
       typeOf( definition ) !== "object" ||
-      typeOf( name ) !== "string" ||
+      typeOf( definition.name ) !== "string" ||
       !(
         typeOf( definition.attach ) === "function" ||
         typeOf( definition.detach ) === "function" ||
@@ -95,11 +106,11 @@ extend( Fixture, {
     ) {
       throw "Fixture definition is invalid.";
 
-    } else if ( fixtures[ name ] !== undefined ) {
+    } else if ( fixtures[ name ] !== undefined && force !== true ) {
       throw "Fixture definition name already exists: " + name;
     }
 
-    fixtures[ name ] = definition;
+    return ( fixtures[ name ] = definition );
   },
 
   equal: function( first, second ) {
@@ -125,25 +136,21 @@ extend( Fixture, {
     return definition;
   },
 
-  isFixture: (function() {
-    var
-      matches,
-      rFunctionName = /function ([^(]+)/;
+  isFixture: function( value ) {
+    return typeOf( value ) === "fixture";
+  },
 
-    return function( value ) {
-      return typeOf( value ) === "object" && value.constructor &&
-        ( matches = rFunctionName.exec( value.constructor.toString() ) ) &&
-        matches[ 1 ] && matches[ 1 ].toLowerCase() === "fixture";
-    };
-  })(),
-
-  list: function() {
+  list: function( filter ) {
     var
       name,
       list = [];
 
+    filter = filter || noop;
+
     for ( name in fixtures ) {
-      list.push( name );
+      if ( filter( name, fixtures[ name ] ) !== false ) {
+        list.push( name );
+      }
     }
 
     return list;
@@ -168,5 +175,19 @@ extend( Fixture, {
     }
 
     return normalized;
+  },
+
+  remove: function( name ) {
+    var
+      i = 0,
+      names = typeOf( name ) === "array" ? name : [ name ];
+
+    for ( i = 0; i < names.length; i++ ) {
+      name = names[ i ];
+
+      if ( fixtures[ name ] ) {
+        delete fixtures[ name ];
+      }
+    }
   }
 });

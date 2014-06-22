@@ -8,6 +8,17 @@ module.exports = function( grunt ) {
 
     pkg: grunt.file.readJSON( "package.json" ),
 
+    // Version management
+    bump: {
+      options: {
+        commit: false,
+        push: false,
+        files: [ "bower.json", "package.json" ],
+        tagName: "%VERSON",
+        updateConfigs: [ "pkg" ]
+      }
+    },
+
     // Concatenates build and source files into a single file.
     concat: {
       options: {
@@ -68,18 +79,19 @@ module.exports = function( grunt ) {
   });
 
   // Load plugins from npm
-  grunt.task.loadNpmTasks( "grunt-contrib-concat" );
-  grunt.task.loadNpmTasks( "grunt-contrib-jshint" );
-  grunt.task.loadNpmTasks( "grunt-contrib-uglify" );
-  grunt.task.loadNpmTasks( "grunt-contrib-watch" );
+  grunt.loadNpmTasks( "grunt-bump" );
+  grunt.loadNpmTasks( "grunt-contrib-concat" );
+  grunt.loadNpmTasks( "grunt-contrib-jshint" );
+  grunt.loadNpmTasks( "grunt-contrib-uglify" );
+  grunt.loadNpmTasks( "grunt-contrib-watch" );
 
   // Dev build
-  grunt.task.registerTask( "default", [
+  grunt.registerTask( "default", [
     "jshint"
   ]);
 
   // Production ready build
-  grunt.task.registerTask( "build", [
+  grunt.registerTask( "build", [
     "default",
     "concat",
     "uglify"
