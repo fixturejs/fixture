@@ -169,7 +169,7 @@ Determine if some value is a `Fixture`. Fails if the value is not an Object of t
 
 Get a list of available [fixture definitions](#definitions) by name.
 
-* **filter( _name_, _fixture_ )** (_Function_) => (_Boolean_ | _undefined)  
+* **filter( _name_, _fixture_ )** (_Function_) => (_Boolean_ | _undefined_)  
   A function that may be used to filter the list of names. Returning `false` within the filter will exclude the item from the list.
 
   * **name** (_String_)  
