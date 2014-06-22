@@ -130,7 +130,7 @@ Creates a [fixture definition](#definitions). All fixture definitions will be no
 * **definition** (_Fixture_ | _Function_ | _Object_ | _String_)  
   The Object from which to create the definition. If the `name` parameter is not provided, this must be an Object with a defined `name` key.
 
-* **force** (_Boolean_)
+* **force** (_Boolean_)  
   Whether to allow the fixture definition to overwrite existing keys in storage. Defaults to `false`.
 
 
@@ -170,7 +170,7 @@ Determine if some value is a `Fixture`. Fails if the value is not an Object of t
 Get a list of available [fixture definitions](#definitions) by name.
 
 * **filter( _name_, _fixture_ )** (_Function_) => (_Boolean_ | _undefined)  
-  A function that may be used to filter the list of names returned.
+  A function that may be used to filter the list of names. Returning `false` within the filter will exclude the item from the list.
 
   * **name** (_String_)  
     The name of the `Fixture`.
