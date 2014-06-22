@@ -11,10 +11,17 @@ module.exports = function( grunt ) {
     // Version management
     bump: {
       options: {
-        commit: false,
-        push: false,
-        files: [ "bower.json", "package.json" ],
-        tagName: "%VERSON",
+        commitFiles: [
+          "dist/*",
+          "bower.json",
+          "package.json"
+        ],
+        files: [
+          "bower.json",
+          "package.json"
+        ],
+        pushTo: "origin master",
+        tagName: "%VERSION%",
         updateConfigs: [ "pkg" ]
       }
     },
@@ -25,7 +32,11 @@ module.exports = function( grunt ) {
         process: true
       },
       dist: {
-        src: [ "build/start.jst", "src/<%= pkg.name %>.js", "build/end.jst" ],
+        src: [
+          "build/start.jst",
+          "src/<%= pkg.name %>.js",
+          "build/end.jst"
+        ],
         dest: "dist/<%= pkg.name %>.js"
       }
     },
@@ -58,7 +69,7 @@ module.exports = function( grunt ) {
         mangle: false,
         preserveComments: "some"
       },
-      basic: {
+      dist: {
         src: "<%= concat.dist.dest %>",
         dest: "dist/<%= pkg.name %>.min.js"
       }
@@ -90,10 +101,20 @@ module.exports = function( grunt ) {
     "jshint"
   ]);
 
-  // Production ready build
+  // Full build
   grunt.registerTask( "build", [
     "default",
     "concat",
     "uglify"
   ]);
+
+  // Production release
+  grunt.registerTask( "release", function() {
+    var type = this.args.shift() || "patch";
+    grunt.task.run( [
+      "bump:" + type + ":bump-only",
+      "build",
+      "bump:" + type + ":commit-only"
+    ] );
+  });
 };
