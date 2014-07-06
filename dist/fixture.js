@@ -1,5 +1,5 @@
 /*!
-Fixture - v1.2.1 - 2014-07-06
+Fixture - v1.3.0 - 2014-07-06
 https://github.com/kflorence/fixture
 A simple, lightweight JavaScript fixture API.
 
