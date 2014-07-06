@@ -1,12 +1,23 @@
+/* jshint camelcase: false */
 module.exports = function( grunt ) {
   var _ = require( "underscore" );
   _.str = require( "underscore.string" );
 
-  grunt.config.init({
+  grunt.config.init( {
     // Expose underscore to the template processor.
     _: _,
 
-    pkg: grunt.file.readJSON( "package.json" ),
+    // Front-end dependency management
+    bowercopy: {
+      vendor: {
+        options: {
+          destPrefix: "vendor"
+        },
+        files: {
+          "require.js": "requirejs/require.js"
+        }
+      }
+    },
 
     // Version management
     bump: {
@@ -22,22 +33,35 @@ module.exports = function( grunt ) {
         ],
         pushTo: "origin master",
         tagName: "%VERSION%",
-        updateConfigs: [ "pkg" ]
+        updateConfigs: [
+          "pkg"
+        ]
       }
     },
 
-    // Concatenates build and source files into a single file.
-    concat: {
-      options: {
-        process: true
-      },
-      dist: {
-        src: [
-          "build/start.jst",
-          "src/<%= pkg.name %>.js",
-          "build/end.jst"
-        ],
-        dest: "dist/<%= pkg.name %>.js"
+    // Clean up files and folders before build
+    clean: {
+      dependencies: [
+        "bower_components",
+        "vendor"
+      ],
+      build: [
+        "dist"
+      ]
+    },
+
+    // Unit testing
+    jasmine: {
+      taskName: {
+        src: "src/**/*.js",
+        options: {
+          outfile: "spec/runner.html",
+          specs: "spec/*.js",
+          template: require( "grunt-template-jasmine-requirejs" ),
+          templateOptions: {
+            requireConfigFile: "build/config.js"
+          }
+        }
       }
     },
 
@@ -60,17 +84,47 @@ module.exports = function( grunt ) {
     // TODO
     //jsonlint: {},
 
+    pkg: grunt.file.readJSON( "package.json" ),
+
     // TODO
     //spec
+
+    // Require.js optimization. Processes multiple AMD compliant files into one.
+    requirejs: {
+      compile: {
+        options: {
+          mainConfigFile: "build/config.js",
+          name: "build/main.js",
+          optimize: "none",
+          out: "dist/fixture.js",
+          skipSemiColonInsertion: true,
+          wrap: {
+            start: grunt.file.read( "build/start.jst" ),
+            end: grunt.file.read( "build/end.jst" )
+          }
+        }
+      }
+    },
+
+    // Remove development-only code segments
+    strip_code: {
+      build: {
+        options: {
+          start_comment: "start-build-ignore",
+          end_comment: "end-build-ignore"
+        },
+        src: "dist/fixture.js"
+      }
+    },
 
     // JavaScript minification for distribution files.
     uglify: {
       options: {
-        mangle: false,
-        preserveComments: "some"
+        banner: grunt.file.read( "build/banner.jst" ),
+        preserveComments: false
       },
       dist: {
-        src: "<%= concat.dist.dest %>",
+        src: "<%= requirejs.compile.options.out %>",
         dest: "dist/<%= pkg.name %>.min.js"
       }
     },
@@ -87,28 +141,42 @@ module.exports = function( grunt ) {
         ]
       }
     }
-  });
+  } );
 
   // Load plugins from npm
+  grunt.loadNpmTasks( "grunt-bowercopy" );
   grunt.loadNpmTasks( "grunt-bump" );
-  grunt.loadNpmTasks( "grunt-contrib-concat" );
+  grunt.loadNpmTasks( "grunt-contrib-clean" );
+  grunt.loadNpmTasks( "grunt-contrib-jasmine" );
   grunt.loadNpmTasks( "grunt-contrib-jshint" );
+  grunt.loadNpmTasks( "grunt-contrib-requirejs" );
   grunt.loadNpmTasks( "grunt-contrib-uglify" );
   grunt.loadNpmTasks( "grunt-contrib-watch" );
+  grunt.loadNpmTasks( "grunt-strip-code" );
 
   // Dev build
   grunt.registerTask( "default", [
-    "jshint"
-  ]);
+    "dependencies",
+    "jshint",
+    "jasmine"
+  ] );
 
-  // Full build
+  // Dependencies
+  grunt.registerTask( "dependencies", [
+    "clean:dependencies",
+    "bowercopy"
+  ] );
+
+  // Build
   grunt.registerTask( "build", [
     "default",
-    "concat",
+    "clean:build",
+    "requirejs",
+    "strip_code",
     "uglify"
-  ]);
+  ] );
 
-  // Production release
+  // Release
   grunt.registerTask( "release", function() {
     var type = this.args.shift() || "patch";
     grunt.task.run( [
@@ -116,5 +184,5 @@ module.exports = function( grunt ) {
       "build",
       "bump:" + type + ":commit-only"
     ] );
-  });
+  } );
 };

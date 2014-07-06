@@ -1,7 +1,7 @@
 {
   "name": "fixture",
   "version": "1.2.0",
-  "description": "A simple, lightweight JavaScript fixture API.",
+  "description": "A simple, lightweight JavaScript fixtures API.",
   "main": [
     "dist/fixture.js",
     "dist/fixture.min.js"
@@ -13,23 +13,21 @@
     "Gruntfile.js"
   ],
   "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-cli": "~0.1.11",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-jshint": "~0.8.0",
-    "grunt-contrib-jshint": "~0.8.0",
-    "grunt-contrib-uglify": "~0.2.7",
-    "grunt-contrib-watch": "~0.5.3",
-    "underscore": "~1.6.0",
-    "underscore.string": "~2.3.3"
+    "requirejs": "~2.1.9"
   },
   "keywords": [
     "attach",
     "callback",
     "detach",
     "fixture",
+    "interact",
     "lifecycle",
     "setup",
-    "teardown"
+    "spec",
+    "test",
+    "testing",
+    "teardown",
+    "unit",
+    "verify"
   ]
 }

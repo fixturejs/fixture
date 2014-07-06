@@ -3,4 +3,6 @@
 *.swp
 npm-debug.log
 
+bower_components/
 node_modules/
+vendor/
