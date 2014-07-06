@@ -97,6 +97,7 @@ module.exports = function( grunt ) {
           name: "build/main.js",
           optimize: "none",
           out: "dist/fixture.js",
+          skipModuleInsertion: true,
           skipSemiColonInsertion: true,
           wrap: {
             start: grunt.file.read( "build/start.jst" ),

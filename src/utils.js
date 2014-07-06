@@ -4,7 +4,7 @@ define( [], function() {
 
 var
   rFunctionName = /function ([^(]+)/,
-  util = {};
+  utils = {};
 
 function extend( dest, source ) {
   var
@@ -19,7 +19,7 @@ function extend( dest, source ) {
   return dest;
 }
 
-extend( util, {
+extend( utils, {
   clone: function( source ) {
     var
       key,
@@ -55,6 +55,6 @@ extend( util, {
 });
 
 /* start-build-ignore */
-return util;
+return utils;
 });
 /* end-build-ignore */

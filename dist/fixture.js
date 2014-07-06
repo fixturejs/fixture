@@ -1,5 +1,5 @@
 /*!
-Fixture - v1.2.0 - 2014-07-06
+Fixture - v1.2.1 - 2014-07-06
 https://github.com/kflorence/fixture
 A simple, lightweight JavaScript fixture API.
 
@@ -22,7 +22,7 @@ Released under the BSD, MIT licenses
 
 var
   rFunctionName = /function ([^(]+)/,
-  util = {};
+  utils = {};
 
 function extend( dest, source ) {
   var
@@ -37,7 +37,7 @@ function extend( dest, source ) {
   return dest;
 }
 
-extend( util, {
+extend( utils, {
   clone: function( source ) {
     var
       key,
@@ -288,8 +288,6 @@ utils.extend( Repository.prototype, {
 // Exports
 Fixture.Repository = Repository;
 
-require( [ "src/utils", "src/fixture", "src/fixture.repository" ] );
-define("build/main.js", function(){});
 
 
   return Fixture;
