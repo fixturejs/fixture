@@ -1,5 +1,5 @@
 /*!
-Fixture - v1.2.0 - 2014-06-22
+Fixture - v1.2.0 - 2014-07-06
 https://github.com/kflorence/fixture
 A simple, lightweight JavaScript fixture API.
 
@@ -11,7 +11,7 @@ Released under the BSD, MIT licenses
 
   // AMD
   if ( typeof define === "function" && define.amd ) {
-    define( factory );
+    define( [], factory );
 
   // Browser
   } else {
@@ -21,49 +21,60 @@ Released under the BSD, MIT licenses
 })(this, function() {
 
 var
-  fixtures = {},
-  typeOf = (function() {
-    var
-      rFunctionName = /function ([^(]+)/,
-      matches,
-      type;
+  rFunctionName = /function ([^(]+)/,
+  util = {};
 
-    return function( value ) {
-      return value == null ? value + "" :
-        ( type = typeof value ) === "object" || type === "function" ? (
-          ( matches = rFunctionName.exec( value.constructor.toString() ) ) &&
-          matches[ 1 ] && matches[ 1 ].toLowerCase() || "object"
-        ) : type;
-    };
-  }()),
-  uuid = 0;
-
-function clone( source ) {
-  var
-    key,
-    cloned = {};
-
-  for ( key in source ) {
-    cloned[ key ] = source[ key ];
-  }
-
-  return cloned;
-}
-
-function extend( source, target ) {
+function extend( dest, source ) {
   var
     key;
 
-  target = target || {};
+  source = source || {};
 
-  for ( key in target ) {
-    source[ key ] = target[ key ];
+  for ( key in source ) {
+    dest[ key ] = source[ key ];
   }
 
-  return source;
+  return dest;
 }
 
-function noop() {}
+extend( util, {
+  clone: function( source ) {
+    var
+      key,
+      dest = {};
+
+    for ( key in source ) {
+      dest[ key ] = source[ key ];
+    }
+
+    return dest;
+  },
+
+  extend: extend,
+
+  makeArray: function( value ) {
+    return this.typeOf( value ) === "array" ? value : [ value ];
+  },
+
+  noop: function() {},
+
+  typeOf: function( value ) {
+    var
+      matches,
+      type;
+
+    return value == null ? value + "" : (
+      ( type = typeof value ) === "object" || type === "function" ? (
+        ( matches = rFunctionName.exec( value.constructor.toString() ) ) &&
+        matches[ 1 ] && matches[ 1 ].toLowerCase() || "object"
+      ) : type
+    );
+  }
+});
+
+
+
+var uuid = 0;
 
 function Fixture( settings ) {
 
@@ -76,38 +87,35 @@ function Fixture( settings ) {
   this.data = {};
   this.uuid = uuid++;
 
-  extend( this, settings );
+  utils.extend( this, settings );
 }
 
-extend( Fixture.prototype, {
-  attach: noop,
-  detach: noop,
+utils.extend( Fixture.prototype, {
+  attach: utils.noop,
+  detach: utils.noop,
   equals: function( other ) {
     return Fixture.isFixture( other ) && this.uuid === other.uuid;
   },
-  interact: noop,
+  interact: utils.noop,
   toString: function() {
     return "Fixture:" + this.uuid;
   },
-  verify: noop
-});
+  verify: utils.noop
+} );
 
-extend( Fixture, {
+utils.extend( Fixture, {
   create: function( value ) {
-    var
-      fixture;
-
     value = this.normalize( value );
 
-    if ( value ) {
-      fixture = new Fixture( value );
+    if ( value && !this.isFixture( value ) ) {
+      value = new Fixture( value );
     }
 
-    return fixture;
+    return value;
   },
 
   define: function( name, definition, force ) {
-    if ( typeOf( name ) === "object" ) {
+    if ( utils.typeOf( name ) === "object" ) {
       force = definition;
       definition = name;
       name = definition.name;
@@ -117,23 +125,26 @@ extend( Fixture, {
     definition.name = name;
 
     if (
-      typeOf( definition ) !== "object" ||
-      typeOf( definition.name ) !== "string" ||
-      !(
-        typeOf( definition.attach ) === "function" ||
-        typeOf( definition.detach ) === "function" ||
-        typeOf( definition.interact ) === "function" ||
-        typeOf( definition.verify ) === "function"
+      utils.typeOf( definition ) !== "object" ||
+      utils.typeOf( definition.name ) !== "string" || !(
+        utils.typeOf( definition.attach ) === "function" ||
+        utils.typeOf( definition.detach ) === "function" ||
+        utils.typeOf( definition.interact ) === "function" ||
+        utils.typeOf( definition.verify ) === "function"
       )
     ) {
       throw "Fixture definition is invalid.";
 
-    } else if ( fixtures[ name ] !== undefined && force !== true ) {
+    } else if ( this.definitions[ name ] && force !== true ) {
       throw "Fixture definition name already exists: " + name;
     }
 
-    return ( fixtures[ name ] = definition );
+    this.definitions[ name ] = definition;
+
+    return definition;
   },
+
+  definitions: {},
 
   equal: function( first, second ) {
     return this.isFixture( first ) && first.equals( second );
@@ -141,47 +152,23 @@ extend( Fixture, {
 
   get: function( name, settings ) {
     var
-      definition;
-
-    if ( typeOf( name ) !== "string" ) {
-      return;
-    }
-
-    // Allow namespacing
-    name = name.split( "." )[ 0 ];
-    definition = fixtures[ name ];
+      definition = this.definitions[ name ];
 
     if ( definition ) {
-      definition = extend( clone( definition ), this.normalize( settings ) );
+      definition = utils.extend( utils.clone( definition ), this.normalize( settings ) );
     }
 
     return definition;
   },
 
   isFixture: function( value ) {
-    return typeOf( value ) === "fixture";
-  },
-
-  list: function( filter ) {
-    var
-      name,
-      list = [];
-
-    filter = filter || noop;
-
-    for ( name in fixtures ) {
-      if ( filter( name, fixtures[ name ] ) !== false ) {
-        list.push( name );
-      }
-    }
-
-    return list;
+    return utils.typeOf( value ) === "fixture";
   },
 
   normalize: function( value ) {
     var
       normalized,
-      type = typeOf( value );
+      type = utils.typeOf( value );
 
     if ( type === "string" ) {
       normalized = this.get( value );
@@ -201,18 +188,109 @@ extend( Fixture, {
 
   remove: function( name ) {
     var
-      i = 0,
-      names = typeOf( name ) === "array" ? name : [ name ];
+      definition = this.definitions[ name ];
 
-    for ( i = 0; i < names.length; i++ ) {
-      name = names[ i ];
+    if ( definition ) {
+      delete this.definitions[ name ];
+    }
 
-      if ( fixtures[ name ] ) {
-        delete fixtures[ name ];
+    return definition;
+  }
+} );
+
+
+
+function Repository() {
+  this.items = [];
+}
+
+utils.extend( Repository.prototype, {
+  add: function( value ) {
+    var
+      fixture = Fixture.create( value );
+
+    if ( fixture ) {
+      this.items.push( fixture );
+    }
+
+    return fixture;
+  },
+
+  get: function( value, indices ) {
+    var
+      fixture,
+      i,
+      j,
+      items = [],
+      values;
+
+    // Get everything
+    if ( value == null ) {
+      items = items.push.apply( items, this.items );
+
+    // Get by name, uuid or fixture
+    } else {
+      values = utils.makeArray( value );
+
+      for ( i = 0; i < values.length; i++ ) {
+        value = values[ i ];
+
+        for ( j = 0; j < this.items.length; j++ ) {
+          fixture = this.items[ j ];
+
+          if (
+            value === fixture ||
+            value === fixture.name ||
+            value === fixture.uuid
+          ) {
+            items.push( indices ? j : fixture );
+          }
+        }
       }
     }
+
+    return items;
+  },
+
+  has: function( value ) {
+    var
+      values = utils.makeArray( value );
+
+    return values.length === this.get( values ).length;
+  },
+
+  remove: function( value ) {
+    var
+      i,
+      removed = [],
+      items = [],
+      indices = this.get( value, true );
+
+    for ( i = 0; i < this.items.length; i++ ) {
+      ( indices.indexOf( i ) < 0 ? items : removed ).push( this.items[ i ] );
+    }
+
+    this.items = items;
+
+    return removed;
+  },
+
+  removeAll: function() {
+    var
+      removed = this.items;
+
+    this.items = [];
+
+    return removed;
   }
-});
+} );
+
+// Exports
+Fixture.Repository = Repository;
+
+require( [ "src/utils", "src/fixture", "src/fixture.repository" ] );
+define("build/main.js", function(){});
+
 
   return Fixture;
 });

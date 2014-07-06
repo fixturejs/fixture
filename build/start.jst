@@ -11,7 +11,7 @@ Released under the <%= _.pluck( pkg.licenses, "type" ).join( ", " ) %> licenses
 
   // AMD
   if ( typeof define === "function" && define.amd ) {
-    define( factory );
+    define( [], factory );
 
   // Browser
   } else {

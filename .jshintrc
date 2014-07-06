@@ -4,8 +4,15 @@
   "eqeqeq": true,
   "eqnull": true,
   "expr": true,
-  "latedef": true,
+  "globals": {
+    "define": true,
+    "describe": true,
+    "expect": true,
+    "it": true,
+    "require": true
+  },
   "immed": true,
+  "latedef": true,
   "newcap": true,
   "noarg": true,
   "node": true,
