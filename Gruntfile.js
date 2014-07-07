@@ -1,9 +1,9 @@
 /* jshint camelcase: false */
-module.exports = function( grunt ) {
-  var _ = require( "underscore" );
-  _.str = require( "underscore.string" );
+module.exports = function(grunt) {
+  var _ = require("underscore");
+  _.str = require("underscore.string");
 
-  grunt.config.init( {
+  grunt.config.init({
     // Expose underscore to the template processor.
     _: _,
 
@@ -57,7 +57,7 @@ module.exports = function( grunt ) {
         options: {
           outfile: "spec/runner.html",
           specs: "spec/*.js",
-          template: require( "grunt-template-jasmine-requirejs" ),
+          template: require("grunt-template-jasmine-requirejs"),
           templateOptions: {
             requireConfigFile: "build/config.js"
           }
@@ -84,7 +84,7 @@ module.exports = function( grunt ) {
     // TODO
     //jsonlint: {},
 
-    pkg: grunt.file.readJSON( "package.json" ),
+    pkg: grunt.file.readJSON("package.json"),
 
     // TODO
     //spec
@@ -100,8 +100,8 @@ module.exports = function( grunt ) {
           skipModuleInsertion: true,
           skipSemiColonInsertion: true,
           wrap: {
-            start: grunt.file.read( "build/start.jst" ),
-            end: grunt.file.read( "build/end.jst" )
+            start: "<%= templates.banner %><%= templates.start %>",
+            end: "<%= templates.end %>"
           }
         }
       }
@@ -118,10 +118,17 @@ module.exports = function( grunt ) {
       }
     },
 
+    // Build templates
+    templates: {
+      banner: grunt.file.read("build/banner.jst"),
+      end: grunt.file.read("build/end.jst"),
+      start: grunt.file.read("build/start.jst")
+    },
+
     // JavaScript minification for distribution files.
     uglify: {
       options: {
-        banner: grunt.file.read( "build/banner.jst" ),
+        banner: "<%= templates.banner %>",
         preserveComments: false
       },
       dist: {
@@ -142,48 +149,46 @@ module.exports = function( grunt ) {
         ]
       }
     }
-  } );
+  });
 
   // Load plugins from npm
-  grunt.loadNpmTasks( "grunt-bowercopy" );
-  grunt.loadNpmTasks( "grunt-bump" );
-  grunt.loadNpmTasks( "grunt-contrib-clean" );
-  grunt.loadNpmTasks( "grunt-contrib-jasmine" );
-  grunt.loadNpmTasks( "grunt-contrib-jshint" );
-  grunt.loadNpmTasks( "grunt-contrib-requirejs" );
-  grunt.loadNpmTasks( "grunt-contrib-uglify" );
-  grunt.loadNpmTasks( "grunt-contrib-watch" );
-  grunt.loadNpmTasks( "grunt-strip-code" );
+  grunt.loadNpmTasks("grunt-bowercopy");
+  grunt.loadNpmTasks("grunt-bump");
+  grunt.loadNpmTasks("grunt-contrib-clean");
+  grunt.loadNpmTasks("grunt-contrib-jasmine");
+  grunt.loadNpmTasks("grunt-contrib-jshint");
+  grunt.loadNpmTasks("grunt-contrib-requirejs");
+  grunt.loadNpmTasks("grunt-contrib-uglify");
+  grunt.loadNpmTasks("grunt-contrib-watch");
+  grunt.loadNpmTasks("grunt-strip-code");
 
-  // Dev build
-  grunt.registerTask( "default", [
-    "dependencies",
+  // Dev testing
+  grunt.registerTask("test", [
     "jshint",
-    "jasmine"
-  ] );
-
-  // Dependencies
-  grunt.registerTask( "dependencies", [
     "clean:dependencies",
-    "bowercopy"
-  ] );
+    "bowercopy",
+    "jasmine"
+  ]);
 
   // Build
-  grunt.registerTask( "build", [
+  grunt.registerTask("build", [
     "default",
     "clean:build",
     "requirejs",
     "strip_code",
     "uglify"
-  ] );
+  ]);
 
   // Release
-  grunt.registerTask( "release", function() {
+  grunt.registerTask("release", function() {
     var type = this.args.shift() || "patch";
-    grunt.task.run( [
+    grunt.task.run([
       "bump:" + type + ":bump-only",
       "build",
       "bump:" + type + ":commit-only"
-    ] );
-  } );
+    ]);
+  });
+
+  // Default task
+  grunt.registerTask("default", "test");
 };

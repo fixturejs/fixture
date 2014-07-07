@@ -26,10 +26,10 @@ Fixture can be installed with [Bower](http://bower.io):
 
 Or downloaded in the following formats:
 
-* [fixture.js](https://raw.githubusercontent.com/kflorence/fixture/master/dist/fixture.js) (latest uncompressed, development version)
-* [fixture.min.js](https://raw.githubusercontent.com/kflorence/fixture/master/dist/fixture.min.js) (latest compressed, production version)
+* [fixture.js](https://raw.githubusercontent.com/fixturejs/fixture/master/dist/fixture.js) (latest uncompressed, development version)
+* [fixture.min.js](https://raw.githubusercontent.com/fixturejs/fixture/master/dist/fixture.min.js) (latest compressed, production version)
 
-For older versions, see [releases](https://github.com/kflorence/fixture/releases).
+For older versions, see [releases](https://github.com/fixturejs/fixture/releases).
 
 
 ## API
@@ -72,7 +72,7 @@ Sets the execution context back to its original state. Generally, anything modif
 #### equals( _other_ ) => _Boolean_
 
 Returns whether or not the instance is equal to another `Fixture`. By default, [Fixture.equal()](#fixtureequal-first-second---boolean) will be used to determine equality.
-  
+
 * **other** (_Fixture_)  
   The `Fixture` to compare against.
 
@@ -97,7 +97,7 @@ Determine if the outcome of interacting with the fixture was expected. Default v
 The following instance properties are available on all fixture instances.
 
 
-#### data => _Object_ 
+#### data => _Object_
 
 An arbitrary hash of key/value pairs to associate with the fixture. An empty Object by default.
 
@@ -140,7 +140,7 @@ Determines if two fixtures are equal by comparing their _[UUID](#uuid--string--n
 
 * **first** (_Fixture_)  
   The value used as a basis of comparison.
-  
+
 * **second** (_Fixture_)  
   The value to be compared against the first.
 
@@ -152,7 +152,7 @@ Get a [fixture definition](#definitions) by name, optionally altering it by mixi
 
 * **name** (_String_)  
   The name of a fixture definition Object.
-  
+
 * **settings** (_Object_)  
   A hash of key/value pairs to mixin to the [fixture definition](#definitions). Matching keys will be overridden.
 
@@ -238,6 +238,10 @@ Fixture definitions are plain Objects that provide base configuration settings f
 
 Definitions may contain any of the standard [methods](#instance-methods) and [properties](#instance-properties) inherent to `Fixture` instances, but they _must_ contain a unique name and _at least one_ of the following methods: _attach_, _detach_, _use_ or _verify_. Names may be [namespaced](http://en.wikipedia.org/wiki/Namespace) to prevent same-name collisions by placing a period (".") at the end of the name followed by a personal identifier, such as: `foo.myfoo`.
 
+
+## Contributing
+
+Install developer dependencies with [npm](https://www.npmjs.org/) by running `npm install && npm install -g grunt-cli`. Run tasks with [Grunt](http://gruntjs.com/) (see the [Gruntfile](https://raw.githubusercontent.com/fixturejs/fixture/master/Gruntfile.js) for a full list of tasks). For example, to generate a build, run `grunt build`. Please follow the coding conventions already in place. Using [EditorConfig](http://editorconfig.org/) is highly encouraged.
 
 ## License
 

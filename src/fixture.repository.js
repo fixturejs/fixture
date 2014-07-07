@@ -1,30 +1,23 @@
 /* start-build-ignore */
-define( [
-  "src/utils",
-  "src/fixture"
-], function(
-  utils,
-  Fixture
-) {
+define(["src/utils", "src/fixture"], function(utils, Fixture) {
 /* end-build-ignore */
-
 function Repository() {
   this.items = [];
 }
 
-utils.extend( Repository.prototype, {
-  add: function( value ) {
+utils.extend(Repository.prototype, {
+  add: function(value) {
     var
-      fixture = Fixture.create( value );
+      fixture = Fixture.create(value);
 
-    if ( fixture ) {
-      this.items.push( fixture );
+    if (fixture) {
+      this.items.push(fixture);
     }
 
     return fixture;
   },
 
-  get: function( value, indices ) {
+  get: function(value, indices) {
     var
       fixture,
       i,
@@ -33,25 +26,25 @@ utils.extend( Repository.prototype, {
       values;
 
     // Get everything
-    if ( value == null ) {
-      items = items.push.apply( items, this.items );
+    if (value == null) {
+      items = items.push.apply(items, this.items);
 
     // Get by name, uuid or fixture
     } else {
-      values = utils.makeArray( value );
+      values = utils.makeArray(value);
 
-      for ( i = 0; i < values.length; i++ ) {
-        value = values[ i ];
+      for (i = 0; i < values.length; i++) {
+        value = values[i];
 
-        for ( j = 0; j < this.items.length; j++ ) {
-          fixture = this.items[ j ];
+        for (j = 0; j < this.items.length; j++) {
+          fixture = this.items[j];
 
           if (
             value === fixture ||
             value === fixture.name ||
             value === fixture.uuid
           ) {
-            items.push( indices ? j : fixture );
+            items.push(indices ? j : fixture);
           }
         }
       }
@@ -60,22 +53,22 @@ utils.extend( Repository.prototype, {
     return items;
   },
 
-  has: function( value ) {
+  has: function(value) {
     var
-      values = utils.makeArray( value );
+      values = utils.makeArray(value);
 
-    return values.length === this.get( values ).length;
+    return values.length === this.get(values).length;
   },
 
-  remove: function( value ) {
+  remove: function(value) {
     var
       i,
       removed = [],
       items = [],
-      indices = this.get( value, true );
+      indices = this.get(value, true);
 
-    for ( i = 0; i < this.items.length; i++ ) {
-      ( indices.indexOf( i ) < 0 ? items : removed ).push( this.items[ i ] );
+    for (i = 0; i < this.items.length; i++) {
+      (indices.indexOf(i) < 0 ? items : removed).push(this.items[i]);
     }
 
     this.items = items;
@@ -91,11 +84,9 @@ utils.extend( Repository.prototype, {
 
     return removed;
   }
-} );
+});
 
-// Exports
 Fixture.Repository = Repository;
-
 /* start-build-ignore */
-} );
+});
 /* end-build-ignore */

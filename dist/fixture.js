@@ -6,7 +6,6 @@ A simple, lightweight JavaScript fixture API.
 Copyright (C) 2014 Kyle Florence
 Released under the BSD, MIT licenses
 */
-
 (function( root, factory ) {
 
   // AMD
@@ -19,32 +18,31 @@ Released under the BSD, MIT licenses
   }
 
 })(this, function() {
-
 var
   rFunctionName = /function ([^(]+)/,
   utils = {};
 
-function extend( dest, source ) {
+function extend(dest, source) {
   var
     key;
 
   source = source || {};
 
-  for ( key in source ) {
-    dest[ key ] = source[ key ];
+  for (key in source) {
+    dest[key] = source[key];
   }
 
   return dest;
 }
 
-extend( utils, {
-  clone: function( source ) {
+extend(utils, {
+  clone: function(source) {
     var
       key,
       dest = {};
 
-    for ( key in source ) {
-      dest[ key ] = source[ key ];
+    for (key in source) {
+      dest[key] = source[key];
     }
 
     return dest;
@@ -52,171 +50,169 @@ extend( utils, {
 
   extend: extend,
 
-  makeArray: function( value ) {
-    return this.typeOf( value ) === "array" ? value : [ value ];
+  makeArray: function(value) {
+    return this.typeOf(value) === "array" ? value : [value];
   },
 
   noop: function() {},
 
-  typeOf: function( value ) {
+  typeOf: function(value) {
     var
       matches,
       type;
 
     return value == null ? value + "" : (
-      ( type = typeof value ) === "object" || type === "function" ? (
-        ( matches = rFunctionName.exec( value.constructor.toString() ) ) &&
-        matches[ 1 ] && matches[ 1 ].toLowerCase() || "object"
+      (type = typeof value) === "object" || type === "function" ? (
+        (matches = rFunctionName.exec(value.constructor.toString())) &&
+        matches[1] && matches[1].toLowerCase() || "object"
       ) : type
     );
   }
 });
 
-
-
 var uuid = 0;
 
-function Fixture( settings ) {
+function isFixture(value) {
+  return utils.typeOf(value) === "fixture";
+}
+
+function Fixture(settings) {
 
   // Allow calling without the "new" operator
-  if ( !Fixture.isFixture( this ) ) {
-    return new Fixture( settings );
+  if (!isFixture(this)) {
+    return new Fixture(settings);
   }
 
   // Properties
   this.data = {};
   this.uuid = uuid++;
 
-  utils.extend( this, settings );
+  utils.extend(this, settings);
 }
 
-utils.extend( Fixture.prototype, {
+utils.extend(Fixture.prototype, {
   attach: utils.noop,
   detach: utils.noop,
-  equals: function( other ) {
-    return Fixture.isFixture( other ) && this.uuid === other.uuid;
+  equals: function(other) {
+    return isFixture(other) && this.uuid === other.uuid;
   },
   interact: utils.noop,
   toString: function() {
     return "Fixture:" + this.uuid;
   },
   verify: utils.noop
-} );
+});
 
-utils.extend( Fixture, {
-  create: function( value ) {
-    value = this.normalize( value );
+utils.extend(Fixture, {
+  create: function(value) {
+    value = this.normalize(value);
 
-    if ( value && !this.isFixture( value ) ) {
-      value = new Fixture( value );
+    if (value && !isFixture(value)) {
+      value = new Fixture(value);
     }
 
     return value;
   },
 
-  define: function( name, definition, force ) {
-    if ( utils.typeOf( name ) === "object" ) {
+  define: function(name, definition, force) {
+    if (utils.typeOf(name) === "object") {
       force = definition;
       definition = name;
       name = definition.name;
     }
 
-    definition = this.normalize( definition );
+    definition = this.normalize(definition);
     definition.name = name;
 
     if (
-      utils.typeOf( definition ) !== "object" ||
-      utils.typeOf( definition.name ) !== "string" || !(
-        utils.typeOf( definition.attach ) === "function" ||
-        utils.typeOf( definition.detach ) === "function" ||
-        utils.typeOf( definition.interact ) === "function" ||
-        utils.typeOf( definition.verify ) === "function"
+      utils.typeOf(definition) !== "object" ||
+      utils.typeOf(definition.name) !== "string" || !(
+        utils.typeOf(definition.attach) === "function" ||
+        utils.typeOf(definition.detach) === "function" ||
+        utils.typeOf(definition.interact) === "function" ||
+        utils.typeOf(definition.verify) === "function"
       )
     ) {
       throw "Fixture definition is invalid.";
 
-    } else if ( this.definitions[ name ] && force !== true ) {
+    } else if (this.definitions[name] && force !== true) {
       throw "Fixture definition name already exists: " + name;
     }
 
-    this.definitions[ name ] = definition;
+    this.definitions[name] = definition;
 
     return definition;
   },
 
   definitions: {},
 
-  equal: function( first, second ) {
-    return this.isFixture( first ) && first.equals( second );
+  equal: function(first, second) {
+    return isFixture(first) && first.equals(second);
   },
 
-  get: function( name, settings ) {
+  get: function(name, settings) {
     var
-      definition = this.definitions[ name ];
+      definition = this.definitions[name];
 
-    if ( definition ) {
-      definition = utils.extend( utils.clone( definition ), this.normalize( settings ) );
+    if (definition) {
+      definition = utils.extend(utils.clone(definition), this.normalize(settings));
     }
 
     return definition;
   },
 
-  isFixture: function( value ) {
-    return utils.typeOf( value ) === "fixture";
-  },
+  isFixture: isFixture,
 
-  normalize: function( value ) {
+  normalize: function(value) {
     var
       normalized,
-      type = utils.typeOf( value );
+      type = utils.typeOf(value);
 
-    if ( type === "string" ) {
-      normalized = this.get( value );
+    if (type === "string") {
+      normalized = this.get(value);
 
-    } else if ( type === "function" ) {
+    } else if (type === "function") {
       normalized = { interact: value };
 
-    } else if ( type === "object" ) {
-      normalized = this.get( value.name, value ) || value;
+    } else if (type === "object") {
+      normalized = this.get(value.name, value) || value;
 
-    } else if ( this.isFixture( value ) ) {
+    } else if (isFixture(value)) {
       normalized = value;
     }
 
     return normalized;
   },
 
-  remove: function( name ) {
+  remove: function(name) {
     var
-      definition = this.definitions[ name ];
+      definition = this.definitions[name];
 
-    if ( definition ) {
-      delete this.definitions[ name ];
+    if (definition) {
+      delete this.definitions[name];
     }
 
     return definition;
   }
-} );
-
-
+});
 
 function Repository() {
   this.items = [];
 }
 
-utils.extend( Repository.prototype, {
-  add: function( value ) {
+utils.extend(Repository.prototype, {
+  add: function(value) {
     var
-      fixture = Fixture.create( value );
+      fixture = Fixture.create(value);
 
-    if ( fixture ) {
-      this.items.push( fixture );
+    if (fixture) {
+      this.items.push(fixture);
     }
 
     return fixture;
   },
 
-  get: function( value, indices ) {
+  get: function(value, indices) {
     var
       fixture,
       i,
@@ -225,25 +221,25 @@ utils.extend( Repository.prototype, {
       values;
 
     // Get everything
-    if ( value == null ) {
-      items = items.push.apply( items, this.items );
+    if (value == null) {
+      items = items.push.apply(items, this.items);
 
     // Get by name, uuid or fixture
     } else {
-      values = utils.makeArray( value );
+      values = utils.makeArray(value);
 
-      for ( i = 0; i < values.length; i++ ) {
-        value = values[ i ];
+      for (i = 0; i < values.length; i++) {
+        value = values[i];
 
-        for ( j = 0; j < this.items.length; j++ ) {
-          fixture = this.items[ j ];
+        for (j = 0; j < this.items.length; j++) {
+          fixture = this.items[j];
 
           if (
             value === fixture ||
             value === fixture.name ||
             value === fixture.uuid
           ) {
-            items.push( indices ? j : fixture );
+            items.push(indices ? j : fixture);
           }
         }
       }
@@ -252,22 +248,22 @@ utils.extend( Repository.prototype, {
     return items;
   },
 
-  has: function( value ) {
+  has: function(value) {
     var
-      values = utils.makeArray( value );
+      values = utils.makeArray(value);
 
-    return values.length === this.get( values ).length;
+    return values.length === this.get(values).length;
   },
 
-  remove: function( value ) {
+  remove: function(value) {
     var
       i,
       removed = [],
       items = [],
-      indices = this.get( value, true );
+      indices = this.get(value, true);
 
-    for ( i = 0; i < this.items.length; i++ ) {
-      ( indices.indexOf( i ) < 0 ? items : removed ).push( this.items[ i ] );
+    for (i = 0; i < this.items.length; i++) {
+      (indices.indexOf(i) < 0 ? items : removed).push(this.items[i]);
     }
 
     this.items = items;
@@ -283,9 +279,8 @@ utils.extend( Repository.prototype, {
 
     return removed;
   }
-} );
+});
 
-// Exports
 Fixture.Repository = Repository;
 
 
