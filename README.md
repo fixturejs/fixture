@@ -1,6 +1,7 @@
 # Fixture
 
 [![Build Status](https://travis-ci.org/fixturejs/fixture.svg?branch=master)](https://travis-ci.org/fixturejs/fixture)
+[![Coverage Status](https://img.shields.io/coveralls/fixturejs/fixture.svg)](https://coveralls.io/r/fixturejs/fixture)
 
 A _fixture_ provides a consistent execution context and reproducible results. For this reason, they are often used in conjunction with [unit tests](http://en.wikipedia.org/wiki/Test_fixture). However, they have many other useful applications.
 
