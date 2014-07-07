@@ -10,10 +10,10 @@ A _fixture_ provides a consistent execution context and reproducible results. Fo
 
 The lifecycle of a fixture is typically composed of these stages, some of which may be optional:
 
-1. [attach](#attach) - Prepares the proper execution context needed to reliably use the fixture.
+1. [attach](#attach) - Prepare the proper execution context needed to reliably use the fixture.
 2. [interact](#interact) - Interact with the fixture.
 3. [verify](#verify) - Determine if the outcome of interacting with the fixture was expected.
-4. [detach](#detach) - Sets the execution context back to its original state.
+4. [detach](#detach) - Set the execution context back to its original state.
 
 
 ## Usage
