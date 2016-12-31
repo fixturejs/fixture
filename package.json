@@ -10,16 +10,7 @@
     "type": "git",
     "url": "https://github.com/fixturejs/fixture.git"
   },
-  "licenses": [
-    {
-      "type": "BSD",
-      "url": "https://raw.github.com/fixturejs/fixture/master/license-bsd"
-    },
-    {
-      "type": "MIT",
-      "url": "https://raw.github.com/fixturejs/fixture/master/license-mit"
-    }
-  ],
+  "licenses": "(BSD OR MIT)",
   "dependencies": {},
   "description": "A simple, lightweight JavaScript fixture API.",
   "keywords": [

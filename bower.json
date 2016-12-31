@@ -2,10 +2,7 @@
   "name": "fixture",
   "version": "1.3.0",
   "description": "A simple, lightweight JavaScript fixtures API.",
-  "main": [
-    "dist/fixture.js",
-    "dist/fixture.min.js"
-  ],
+  "main": "dist/fixture.js",
   "ignore": [
     "**/.*",
     "*.json",
