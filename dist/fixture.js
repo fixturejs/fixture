@@ -1,10 +1,10 @@
 /*!
-Fixture - v1.3.0 - 2014-07-06
-https://github.com/kflorence/fixture
+Fixturejs - v1.3.1 - 2016-12-31
+https://github.com/fixturejs/fixture
 A simple, lightweight JavaScript fixture API.
 
-Copyright (C) 2014 Kyle Florence
-Released under the BSD, MIT licenses
+Copyright (C) 2016 Kyle Florence
+Released under the (BSD OR MIT) licenses
 */
 (function( root, factory ) {
 
@@ -14,7 +14,7 @@ Released under the BSD, MIT licenses
 
   // Browser
   } else {
-    root.Fixture = factory();
+    root.Fixturejs = factory();
   }
 
 })(this, function() {
@@ -285,5 +285,5 @@ Fixture.Repository = Repository;
 
 
 
-  return Fixture;
+  return Fixturejs;
 });
