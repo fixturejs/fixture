@@ -1,5 +1,5 @@
 {
-  "name": "fixture",
+  "name": "fixturejs",
   "version": "1.3.0",
   "title": "Fixture",
   "author": {
@@ -8,16 +8,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kflorence/fixture.git"
+    "url": "https://github.com/fixturejs/fixture.git"
   },
   "licenses": [
     {
       "type": "BSD",
-      "url": "https://raw.github.com/kflorence/fixture/master/license-bsd"
+      "url": "https://raw.github.com/fixturejs/fixture/master/license-bsd"
     },
     {
       "type": "MIT",
-      "url": "https://raw.github.com/kflorence/fixture/master/license-mit"
+      "url": "https://raw.github.com/fixturejs/fixture/master/license-mit"
     }
   ],
   "dependencies": {},
@@ -31,7 +31,7 @@
     "setup",
     "teardown"
   ],
-  "homepage": "https://github.com/kflorence/fixture",
+  "homepage": "https://github.com/fixturejs/fixture",
   "devDependencies": {
     "grunt": "~0.4.0",
     "grunt-bowercopy": "~1.0.1",

@@ -23,7 +23,11 @@ The goal of this project is to set up a standard, lightweight API for the use of
 
 ## Installation
 
-Fixture can be installed with [Bower](http://bower.io):
+Fixture can be installed with [NPM](http://npmjs.org):
+
+    npm install fixturejs
+
+Or [Bower](http://bower.io):
 
     bower install fixture
 

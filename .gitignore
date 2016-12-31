@@ -1,7 +1,14 @@
 *~
+.*
+!.editorconfig
+!.gitignore
+!.jshintignore
+!.jshintrc
+!.nvmrc
+!.travis.yml
 *.sublime*
 *.swp
-npm-debug.log
+*.log
 
 bower_components/
 node_modules/
