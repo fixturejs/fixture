@@ -133,7 +133,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: "<%= requirejs.compile.options.out %>",
-        dest: "dist/<%= pkg.name %>.min.js"
+        dest: "dist/fixture.min.js"
       }
     },
 
