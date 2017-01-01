@@ -1,5 +1,5 @@
 /*!
-Fixturejs - v1.3.1 - 2016-12-31
+Fixture - v1.3.2 - 2016-12-31
 https://github.com/fixturejs/fixture
 A simple, lightweight JavaScript fixture API.
 
@@ -14,7 +14,7 @@ Released under the (BSD OR MIT) licenses
 
   // Browser
   } else {
-    root.Fixturejs = factory();
+    root.Fixture = factory();
   }
 
 })(this, function() {
@@ -285,5 +285,5 @@ Fixture.Repository = Repository;
 
 
 
-  return Fixturejs;
+  return Fixture;
 });
