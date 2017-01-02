@@ -27,7 +27,7 @@ utils.extend(Repository.prototype, {
 
     // Get everything
     if (value == null) {
-      items = items.push.apply(items, this.items);
+      items.push.apply(items, this.items);
 
     // Get by name, uuid or fixture
     } else {
@@ -41,7 +41,8 @@ utils.extend(Repository.prototype, {
 
           if (
             value === fixture ||
-            value === fixture.name ||
+            // Match against namespace or name
+            new RegExp( value + "(?:\\.|$)" ).test( fixture.name ) ||
             value === fixture.uuid
           ) {
             items.push(indices ? j : fixture);
