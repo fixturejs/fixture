@@ -1,9 +1,9 @@
 /*!
-Fixture - v1.3.2 - 2016-12-31
+Fixture - v1.3.3 - 2017-01-01
 https://github.com/fixturejs/fixture
 A simple, lightweight JavaScript fixture API.
 
-Copyright (C) 2016 Kyle Florence
+Copyright (C) 2017 Kyle Florence
 Released under the (BSD OR MIT) licenses
 */
 (function( root, factory ) {
@@ -222,7 +222,7 @@ utils.extend(Repository.prototype, {
 
     // Get everything
     if (value == null) {
-      items = items.push.apply(items, this.items);
+      items.push.apply(items, this.items);
 
     // Get by name, uuid or fixture
     } else {
@@ -236,7 +236,8 @@ utils.extend(Repository.prototype, {
 
           if (
             value === fixture ||
-            value === fixture.name ||
+            // Match against namespace or name
+            new RegExp( value + "(?:\\.|$)" ).test( fixture.name ) ||
             value === fixture.uuid
           ) {
             items.push(indices ? j : fixture);
