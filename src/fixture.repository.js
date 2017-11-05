@@ -1,93 +1,134 @@
 /* start-build-ignore */
 define(["src/utils", "src/fixture"], function(utils, Fixture) {
 /* end-build-ignore */
-function Repository() {
-  this.items = [];
+function Repository(fixtures) {
+  this.fixtures = {};
+
+  if (fixtures !== undefined) {
+    this.set(fixtures);
+  }
 }
 
 utils.extend(Repository.prototype, {
-  add: function(value) {
-    var
-      fixture = Fixture.create(value);
 
-    if (fixture) {
-      this.items.push(fixture);
+  /**
+   * Get all Fixtures matching the given value(s).
+   * @param {*} value The value(s) to match.
+   * @returns The matching Fixtures.
+   */
+  get: function(value) {
+    var
+      fixtures = [],
+      name,
+      results = [];
+
+    for (name in this.fixtures) {
+      fixtures.push(this.fixtures[name]);
     }
 
-    return fixture;
-  },
+    // Return everything if no value is given.
+    if (value === null || value === undefined) {
+      results = fixtures;
 
-  get: function(value, indices) {
-    var
-      fixture,
-      i,
-      j,
-      items = [],
-      values;
-
-    // Get everything
-    if (value == null) {
-      items.push.apply(items, this.items);
-
-    // Get by name, uuid or fixture
     } else {
-      values = utils.makeArray(value);
-
-      for (i = 0; i < values.length; i++) {
-        value = values[i];
-
-        for (j = 0; j < this.items.length; j++) {
-          fixture = this.items[j];
-
+      console.log("value", value);
+      utils.makeArray(value).forEach(function(value) {
+        fixtures.forEach(function(fixture) {
           if (
             value === fixture ||
+            value === fixture.uuid ||
             // Match against namespace or name
-            new RegExp( value + "(?:\\.|$)" ).test( fixture.name ) ||
-            value === fixture.uuid
+            new RegExp(value + "(?:\\.|$)").test(fixture.name)
           ) {
-            items.push(indices ? j : fixture);
+            results.push(fixture);
           }
-        }
-      }
+        });
+      });
     }
 
-    return items;
+    return results;
   },
 
+  /**
+   * Checks for the given value(s) in the repository.
+   * @param {*} value The value(s) to match.
+   * @returns True if the given value(s) are in the repository, false otherwise.
+   */
   has: function(value) {
-    var
-      values = utils.makeArray(value);
-
-    return values.length === this.get(values).length;
+    return utils.makeArray(value).length === this.get(value).length;
   },
 
+  /**
+   * Remove Fixtures which match the given value.
+   * @param {*} value The value used to find matching Fixtures.
+   * @returns The Fixtures that were removed.
+   */
   remove: function(value) {
     var
-      i,
-      removed = [],
-      items = [],
-      indices = this.get(value, true);
+      fixtures = this.get(value);
 
-    for (i = 0; i < this.items.length; i++) {
-      (indices.indexOf(i) < 0 ? items : removed).push(this.items[i]);
-    }
+    fixtures.forEach(function(fixture) {
+      delete this.fixtures[fixture.name];
+    }, this);
 
-    this.items = items;
-
-    return removed;
+    return fixtures;
   },
 
-  removeAll: function() {
+  /**
+   * Store a Fixture by name.
+   * @param {*} value The name of the Fixture, an Array of Fixtures, or an Object containing name/Fixture pairs.
+   * @param {*} fixture The Fixture, if setting a single Fixture by name.
+   */
+  set: function(value, fixture) {
     var
-      removed = this.items;
+      name,
+      fixtures = {};
 
-    this.items = [];
+    // Support for an Object of name/Fixture pairs.
+    if (typeof value === "object") {
+      fixtures = value;
 
-    return removed;
+    // Support setting a single Fixture by name and value.
+    } else if (typeof value === "string") {
+      fixtures[value] = fixture;
+
+    // Support setting an Array of Fixtures.
+    } else if (utils.typeOf(value) === "array") {
+      value.forEach(function(fixture) {
+        if (!fixture.name) {
+          throw "Cannot set Fixture: missing name.";
+
+        } else if (fixtures[fixture.name]) {
+          throw "Cannot set Fixture: duplicate name '" + fixture.name + "'.";
+        }
+
+        fixtures[fixture.name] = fixture;
+      });
+
+    } else {
+      throw "Cannot set Fixture: invalid argument type: " + utils.typeOf(value);
+    }
+
+    for (name in fixtures) {
+      fixture = fixtures[name];
+
+      if (!Fixture.isFixture(fixture)) {
+        throw "Cannot set Fixture: Fixture is invalid.";
+
+      } else if (this.fixtures[name]) {
+        throw "Cannot set Fixture: '" + name + "' is already defined.";
+      }
+
+      fixture.name = name;
+      this.fixtures[name] = fixture;
+    }
   }
 });
 
+// Expose publicly on Fixture.
 Fixture.Repository = Repository;
+
+return Repository;
 /* start-build-ignore */
 });
 /* end-build-ignore */

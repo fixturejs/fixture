@@ -8,17 +8,35 @@ function isFixture(value) {
 }
 
 function Fixture(settings) {
+  settings = settings || {};
 
-  // Allow calling without the "new" operator
-  if (!isFixture(this)) {
-    return new Fixture(settings);
+  this.data = {};
+
+  if (utils.typeOf(settings.data) === "object") {
+    utils.extend(this.data, settings.data);
   }
 
-  // Properties
-  this.data = {};
-  this.uuid = uuid++;
+  if (utils.typeOf(settings.name) === "string") {
+    this.name = settings.name;
+  }
 
-  utils.extend(this, settings);
+  if (utils.typeOf(settings.attach) === "function") {
+    this.attach = settings.attach;
+  }
+
+  if (utils.typeOf(settings.detach) === "function") {
+    this.detach = settings.detach;
+  }
+
+  if (utils.typeOf(settings.interact) === "function") {
+    this.interact = settings.interact;
+  }
+
+  if (utils.typeOf(settings.verify) === "function") {
+    this.verify = settings.verify;
+  }
+
+  this.uuid = uuid++;
 }
 
 utils.extend(Fixture.prototype, {
@@ -29,102 +47,17 @@ utils.extend(Fixture.prototype, {
   },
   interact: utils.noop,
   toString: function() {
-    return "Fixture:" + this.uuid;
+    return "Fixture: " + this.uuid;
   },
   verify: utils.noop
 });
 
 utils.extend(Fixture, {
-  create: function(value) {
-    value = this.normalize(value);
-
-    if (value && !isFixture(value)) {
-      value = new Fixture(value);
-    }
-
-    return value;
-  },
-
-  define: function(name, definition, force) {
-    if (utils.typeOf(name) === "object") {
-      force = definition;
-      definition = name;
-      name = definition.name;
-    }
-
-    definition = this.normalize(definition);
-    definition.name = name;
-
-    if (
-      utils.typeOf(definition) !== "object" ||
-      utils.typeOf(definition.name) !== "string" || !(
-        utils.typeOf(definition.attach) === "function" ||
-        utils.typeOf(definition.detach) === "function" ||
-        utils.typeOf(definition.interact) === "function" ||
-        utils.typeOf(definition.verify) === "function"
-      )
-    ) {
-      throw "Fixture definition is invalid.";
-
-    } else if (this.definitions[name] && force !== true) {
-      throw "Fixture definition name already exists: " + name;
-    }
-
-    this.definitions[name] = definition;
-
-    return definition;
-  },
-
-  definitions: {},
-
   equal: function(first, second) {
     return isFixture(first) && first.equals(second);
   },
 
-  get: function(name, settings) {
-    var
-      definition = this.definitions[name];
-
-    if (definition) {
-      definition = utils.extend(utils.clone(definition), this.normalize(settings));
-    }
-
-    return definition;
-  },
-
-  isFixture: isFixture,
-
-  normalize: function(value) {
-    var
-      normalized,
-      type = utils.typeOf(value);
-
-    if (type === "string") {
-      normalized = this.get(value);
-
-    } else if (type === "function") {
-      normalized = { interact: value };
-
-    } else if (type === "object") {
-      normalized = this.get(value.name, value) || value;
-
-    } else if (isFixture(value)) {
-      normalized = value;
-    }
-
-    return normalized;
-  },
-
-  remove: function(name) {
-    var
-      definition = this.definitions[name];
-
-    if (definition) {
-      delete this.definitions[name];
-    }
-
-    return definition;
-  }
+  isFixture: isFixture
 });
 /* start-build-ignore */
 return Fixture;
